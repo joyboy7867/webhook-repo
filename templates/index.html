@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>GitHub Activity Feed</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body class="bg-[#f9fafb] text-gray-800 font-sans min-h-screen flex items-center justify-center p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-md rounded-lg p-6">
+    <h1 class="text-2xl font-bold text-center mb-4 text-indigo-600">
+      GitHub Actions Activity
+    </h1>
+
+    <ul id="feed" class="space-y-3">
+      <!-- Events go here -->
+    </ul>
+
+    <p class="text-sm text-center text-gray-400 mt-6">
+      Updates every 15 seconds 
+    </p>
+  </div>
+
+  <script>
+    async function fetchEvents() {
+      try {
+        const res = await axios.get("/api/events");
+        const feed = document.getElementById("feed");
+        feed.innerHTML = ""; 
+
+        res.data.forEach(event => {
+          const time = new Date(event.timestamp).toUTCString();
+          let line = "";
+
+          switch (event.action_type) {
+            case "push":
+              line = `${event.author} pushed to <strong>${event.to_branch}</strong>`;
+              break;
+            case "pull_request":
+              line = `${event.author} opened a PR from <strong>${event.from_branch}</strong> to <strong>${event.to_branch}</strong>`;
+              break;
+            case "merge":
+              line = `${event.author} merged <strong>${event.from_branch}</strong> into <strong>${event.to_branch}</strong>`;
+              break;
+            default:
+              line = "Unknown event";
+          }
+
+          const item = document.createElement("li");
+          item.innerHTML = `
+            <div class="border border-gray-200 rounded-md p-4 hover:bg-gray-50 transition">
+              <p class="mb-1">${line}</p>
+              <span class="text-xs text-gray-500">${time}</span>
+            </div>
+          `;
+          feed.appendChild(item);
+        });
+      } catch (err) {
+        console.error("Could not load events:", err);
+      }
+    }
+
+    fetchEvents();
+    setInterval(fetchEvents, 15000);
+  </script>
+
+</body>
+</html>
