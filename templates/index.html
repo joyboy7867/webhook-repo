@@ -35,18 +35,28 @@
           let line = "";
 
           switch (event.action_type) {
-            case "push":
-              line = `${event.author} pushed to <strong>${event.to_branch}</strong>`;
-              break;
-            case "pull_request":
-              line = `${event.author} opened a PR from <strong>${event.from_branch}</strong> to <strong>${event.to_branch}</strong>`;
-              break;
-            case "merge":
-              line = `${event.author} merged <strong>${event.from_branch}</strong> into <strong>${event.to_branch}</strong>`;
-              break;
-            default:
-              line = "Unknown event";
-          }
+              
+              case "push":
+                badgeClass = "bg-green-500";
+                label = "PUSH";
+                line = `<span class="text-white text-xs font-semibold ${badgeClass} px-2 py-1 rounded-full mr-2">${label}</span>
+                        ${event.author} pushed to <strong>${event.to_branch}</strong>`;
+                break;
+              case "pull_request":
+                badgeClass = "bg-blue-500";
+                label = "PULL REQUEST";
+                line = `<span class="text-white text-xs font-semibold ${badgeClass} px-2 py-1 rounded-full mr-2">${label}</span>
+                        ${event.author} opened a PR from <strong>${event.from_branch}</strong> to <strong>${event.to_branch}</strong>`;
+                break;
+              case "merge":
+                badgeClass = "bg-purple-500";
+                label = "MERGE";
+                line = `<span class="text-white text-xs font-semibold ${badgeClass} px-2 py-1 rounded-full mr-2">${label}</span>
+                        ${event.author} merged <strong>${event.from_branch}</strong> into <strong>${event.to_branch}</strong>`;
+                break;
+              default:
+                line = "Unknown event";
+            }
 
           const item = document.createElement("li");
           item.innerHTML = `
